@@ -3,6 +3,7 @@ package com.example.delivery.config;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -12,6 +13,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+@Profile("dev")
 public class DatabaseConfig {
 
     @Bean
