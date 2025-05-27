@@ -1,51 +1,56 @@
+// src/main/java/com/example/delivery/controller/AuthController.java
 package com.example.delivery.controller;
 
-import com.example.delivery.dto.LoginRequest;
-import com.example.delivery.dto.LoginResponse;
-import com.example.delivery.dto.RegisterRequest;
+import com.example.delivery.dto.*;
 import com.example.delivery.model.User;
 import com.example.delivery.service.UserService;
+import com.example.delivery.config.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import com.example.delivery.config.JwtTokenProvider;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;
+
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          JwtTokenProvider tokenProvider,
-                          UserService userService) {
-        this.authenticationManager = authenticationManager;
-        this.tokenProvider = tokenProvider;
+    public AuthController(UserService userService,
+                          AuthenticationManager authenticationManager,
+                          JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
-    }
-
-    @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.generateToken(authentication);
-        return new LoginResponse(jwt);
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody RegisterRequest registerRequest) {
+    public RegisterResponse register(@RequestBody RegisterRequest request) {
         User user = new User();
-        user.setUsername(registerRequest.getUsername());
-        user.setPassword(registerRequest.getPassword());
-        return userService.registerUser(user);
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+
+        User savedUser = userService.registerUser(user);
+
+        return new RegisterResponse(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getRole()
+        );
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+
+        String token = jwtTokenProvider.generateToken(authentication);
+        return new LoginResponse(token);
     }
 }
