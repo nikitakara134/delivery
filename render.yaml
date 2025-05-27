@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: delivery-service
+    env: java
+    build:
+      path: .
+      dockerfile: Dockerfile
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: postgresql://delivery_bd_user:4OeHUn5DK2JKCNtupxCmEO8epqBNSeF6@dpg-d0qq1kre5dus739q1eq0-a.oregon-postgres.render.com/delivery_bd
+      - key: SPRING_DATASOURCE_USERNAME
+        value: delivery_bd_user
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: 4OeHUn5DK2JKCNtupxCmEO8epqBNSeF6
+      - key: LOGSTASH_HOST
+        value: your-logstash-service-url
+    plan: free

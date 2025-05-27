@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - logstash
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/delivery_bd
+      - SPRING_DATASOURCE_USERNAME=delivery_bd_user
+      - SPRING_DATASOURCE_PASSWORD=4OeHUn5DK2JKCNtupxCmEO8epqBNSeF6
+      - LOGSTASH_HOST=logstash
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=delivery_bd
+      - POSTGRES_USER=delivery_bd_user
+      - POSTGRES_PASSWORD=4OeHUn5DK2JKCNtupxCmEO8epqBNSeF6
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.14.0
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.14.0
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+volumes:
+  postgres_data:
+  elasticsearch_data:
