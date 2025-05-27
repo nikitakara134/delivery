@@ -17,9 +17,7 @@ public class OAuth2Config {
                         .loginPage("/oauth2/login")
                         .defaultSuccessUrl("/")
                 )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                );
+                .logout(logout -> logout.logoutSuccessUrl("/"));
 
         return http.build();
     }
