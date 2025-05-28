@@ -17,6 +17,12 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     enabled: true
 
+  # Ініціалізація test-даних із data.sql
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+
   security:
     oauth2:
       client:
