@@ -1,4 +1,3 @@
-// src/main/java/com/example/delivery/repository/UserRepository.java
 package com.example.delivery.repository;
 
 import com.example.delivery.model.User;

@@ -1,4 +1,4 @@
-// src/main/java/com/example/delivery/model/User.java
+
 package com.example.delivery.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
