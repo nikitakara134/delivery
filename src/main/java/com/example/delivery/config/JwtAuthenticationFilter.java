@@ -26,13 +26,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        //   Без проверки токена пропускаем все /auth/**
         if (path.startsWith("/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ── Проверка JWT для остальных запросов ───────────────────────────────
         String token = tokenProvider.resolveToken(request);
         if (token != null && tokenProvider.validateToken(token)) {
             var auth = tokenProvider.getAuthentication(token);
