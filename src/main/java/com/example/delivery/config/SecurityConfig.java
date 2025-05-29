@@ -3,6 +3,7 @@ package com.example.delivery.config;
 import com.example.delivery.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,7 +26,8 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          CustomUserDetailsService userDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userDetailsService = userDetailsService;
     }
@@ -40,16 +42,20 @@ public class SecurityConfig {
                                 "/",
                                 "/auth/**",
                                 "/restaurants/**",
-                                "/restaurants",
-                                "/menu/**",
-                                "/menu",
-                                "/swagger-ui/**", "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
                                 "/oauth2/**"
                         ).permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/menu/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/menu/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/menu/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/menu/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()) // добавляем аутентификационный провайдер
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -60,13 +66,11 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    // Бин PasswordEncoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Аутентификационный провайдер, который связывает UserDetailsService и PasswordEncoder
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

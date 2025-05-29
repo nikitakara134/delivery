@@ -25,14 +25,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
+        String method = request.getMethod();
 
-        //   Без проверки токена пропускаем все /auth/**
-        if (path.startsWith("/auth/")) {
+        // Пропускаємо без перевірки для публічних ендпоінтів та GET /menu
+        if (path.startsWith("/auth/") ||
+                path.startsWith("/restaurants/") ||
+                (path.startsWith("/menu/") && "GET".equalsIgnoreCase(method))) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ── Проверка JWT для остальных запросов ───────────────────────────────
+        // Для всіх інших випадків перевіряємо токен
         String token = tokenProvider.resolveToken(request);
         if (token != null && tokenProvider.validateToken(token)) {
             var auth = tokenProvider.getAuthentication(token);
@@ -42,4 +45,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-
