@@ -28,7 +28,7 @@
 
 - додати функціонал реєстрації користувача за допомогою логіну та паролю (HTML-форма та REST-запит)
 https://github.com/nikitakara134/front.git
-
+https://front-u89i.onrender.com
 ![image](https://github.com/user-attachments/assets/bef88db7-da0a-46d3-ac18-0a7d2f67a023)
 ![image](https://github.com/user-attachments/assets/a990640f-dffb-4758-a4ca-39804e962379)
 
